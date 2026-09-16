@@ -683,7 +683,7 @@ img {
 }
 
 .numbers-grid {
-  padding: 64px 24px 24px;
+  padding: 64px 24px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 32px;
@@ -700,12 +700,6 @@ img {
   font-size: 14px;
   font-weight: 500;
   margin-top: 12px;
-  color: var(--color-blacktop-700);
-}
-
-.numbers-footnote {
-  padding: 0 24px 56px;
-  font-size: 12px;
   color: var(--color-blacktop-700);
 }
 
