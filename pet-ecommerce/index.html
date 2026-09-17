@@ -35,9 +35,35 @@
         <a href="#demo" class="btn btn-secondary">Talk to our team</a>
       </div>
     </div>
-    <div class="media reveal" data-reveal-delay="100">
-      <div class="media-note">
-        <span>Box truck at a loading dock, daylight, working hands. No pets, no retailer brands, no stock-smiling drivers.</span>
+    <div class="reveal" data-reveal-delay="100">
+      <div class="panel delivery" data-delivery>
+        <div class="panel-head">
+          <span>Delivery 48213 &middot; 1 pallet, 940 lbs</span>
+          <span class="panel-tag delivery-state">Delivered</span>
+        </div>
+        <ol class="delivery-steps">
+          <li class="dstep is-done">
+            <span class="dmark"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.5 6.4 2.4 2.4L9.6 3.6"/></svg></span>
+            <span class="dtext"><span class="dtitle">Driver assigned</span><span class="dmeta">Box truck with liftgate</span></span>
+            <span class="dtime">9:04</span>
+          </li>
+          <li class="dstep is-done">
+            <span class="dmark"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.5 6.4 2.4 2.4L9.6 3.6"/></svg></span>
+            <span class="dtext"><span class="dtitle">Picked up</span><span class="dmeta">Fulfillment center 04</span></span>
+            <span class="dtime">9:41</span>
+          </li>
+          <li class="dstep is-done">
+            <span class="dmark"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.5 6.4 2.4 2.4L9.6 3.6"/></svg></span>
+            <span class="dtext"><span class="dtitle">En route</span><span class="dmeta">Live location shared with support</span></span>
+            <span class="dtime">10:12</span>
+          </li>
+          <li class="dstep is-done">
+            <span class="dmark"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.5 6.4 2.4 2.4L9.6 3.6"/></svg></span>
+            <span class="dtext"><span class="dtitle">Delivered</span><span class="dmeta">Photo and signature captured at drop-off</span></span>
+            <span class="dtime">10:58</span>
+          </li>
+        </ol>
+        <div class="panel-note">Proof of delivery lands on the order record, in the system your team already works in.</div>
       </div>
     </div>
   </section>
@@ -137,7 +163,7 @@
       <div class="split-media reveal" data-reveal-delay="100">
         <div class="panel">
           <div class="panel-head">
-            <span>Week of [ date ] · Market [ TBD ]</span>
+            <span>Week of March 3 · Phoenix</span>
             <span class="legend">
               <span><span class="dot dot-base"></span>Dedicated</span>
               <span><span class="dot dot-extra"></span>Hotshot</span>
@@ -187,7 +213,7 @@
       <div class="split-media reveal" data-reveal-delay="100">
         <div class="panel">
           <div class="panel-head">
-            <span>Outbound delivery · Order [ id ]</span>
+            <span>Outbound delivery · Order 48213</span>
             <span class="panel-tag">Your WMS / OMS</span>
           </div>
           <div class="panel-body">
@@ -197,7 +223,7 @@
                 <div class="step-n">Quote</div>
                 <div class="step-d">Vehicle match and price for the load, before anyone commits a truck.</div>
               </div>
-              <div class="step-m">[ rate ]</div>
+              <div class="step-m">$164</div>
             </div>
             <div class="flow-row">
               <span class="marker"></span>
@@ -205,7 +231,7 @@
                 <div class="step-n">Book</div>
                 <div class="step-d">Dispatch from the same screen your team already works outbound in.</div>
               </div>
-              <div class="step-m">ETA [ time ]</div>
+              <div class="step-m">ETA 2:15 PM</div>
             </div>
             <div class="flow-row">
               <span class="marker"></span>
@@ -279,7 +305,7 @@
       <div class="split-media reveal" data-reveal-delay="100">
         <div class="panel">
           <div class="panel-head">
-            <span>Delivery [ id ] · Proof of delivery</span>
+            <span>Delivery 48207 · Proof of delivery</span>
             <span class="panel-tag">Live</span>
           </div>
           <div class="panel-body">
@@ -287,14 +313,14 @@
               <span class="marker"></span>
               <div class="step">
                 <div class="step-n">Driver assigned</div>
-                <div class="step-d">[ name ] · [ vehicle ]</div>
+                <div class="step-d">Marcus R. · Box truck with liftgate</div>
               </div>
             </div>
             <div class="flow-row">
               <span class="marker"></span>
               <div class="step">
                 <div class="step-n">Picked up</div>
-                <div class="step-d">FC [ id ] · [ time ]</div>
+                <div class="step-d">FC 04 · 11:20 AM</div>
               </div>
             </div>
             <div class="flow-row">

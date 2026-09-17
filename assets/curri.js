@@ -56,6 +56,33 @@ function countUp(el) {
   requestAnimationFrame(frame);
 }
 
+/* Delivery completion. The markup ships finished, so this rewinds to the first
+ * step and replays — anything that stops the script leaves a completed card. */
+function playDelivery(panel) {
+  if (panel.dataset.played) return;
+  panel.dataset.played = '1';
+  if (reduceMotion) return;
+
+  const steps = Array.from(panel.querySelectorAll('.dstep'));
+  const state = panel.querySelector('.delivery-state');
+  const finalState = state ? state.textContent : '';
+  if (!steps.length) return;
+
+  panel.classList.add('is-playing');
+  steps.forEach((s) => s.classList.remove('is-done'));
+  if (state) state.textContent = 'Booked';
+
+  steps.forEach((step, i) => {
+    setTimeout(() => {
+      step.classList.add('is-done');
+      if (!state) return;
+      const title = step.querySelector('.dtitle');
+      state.textContent = i === steps.length - 1 ? finalState : (title ? title.textContent : finalState);
+      if (i === steps.length - 1) panel.classList.remove('is-playing');
+    }, 550 + i * 750);
+  });
+}
+
 /* Reveal on scroll. Deliberately a plain scroll handler rather than an
  * IntersectionObserver: observer entries are delivered asynchronously, so a
  * fast or programmatic scroll can leave elements permanently hidden. */
@@ -75,6 +102,7 @@ function revealInView() {
       el.classList.add('is-visible');
       if (el.hasAttribute('data-countup')) countUp(el);
       el.querySelectorAll('[data-countup]').forEach(countUp);
+      el.querySelectorAll('[data-delivery]').forEach(playDelivery);
     }, delay);
     pending.splice(i, 1);
   }

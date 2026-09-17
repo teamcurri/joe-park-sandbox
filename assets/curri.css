@@ -697,6 +697,104 @@ section[id] {
   color: var(--text-body);
 }
 
+/* In-app delivery completion. The finished state is the default markup, so
+ * no-JS and reduced-motion both land on a completed delivery; the script
+ * rewinds it and replays the steps. */
+.delivery-steps {
+  list-style: none;
+  margin: 0;
+  padding: 6px 16px;
+}
+
+.dstep {
+  position: relative;
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  gap: 12px;
+  padding: 12px 0;
+  align-items: start;
+  opacity: 1;
+  transition: opacity 300ms ease-out;
+}
+
+.dstep:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 28px;
+  bottom: -12px;
+  width: 1px;
+  background: var(--teal);
+  transition: background-color 300ms ease-out;
+}
+
+.dmark {
+  width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  border: 1.5px solid var(--teal);
+  background: var(--teal);
+  color: var(--blacktop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  transition: background-color 250ms ease-out, border-color 250ms ease-out;
+}
+
+.dmark svg {
+  width: 11px;
+  height: 11px;
+  opacity: 1;
+  transition: opacity 200ms ease-out;
+}
+
+.dtext {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.dtitle {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.dmeta {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--text-body);
+}
+
+.dtime {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-body);
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+/* Pending state — only ever applied by the script. */
+.delivery.is-playing .dstep:not(.is-done) {
+  opacity: 0.4;
+}
+
+.delivery.is-playing .dstep:not(.is-done) .dmark {
+  background: var(--surface);
+  border-color: rgba(28, 28, 28, 0.25);
+}
+
+.delivery.is-playing .dstep:not(.is-done) .dmark svg {
+  opacity: 0;
+}
+
+.delivery.is-playing .dstep:not(.is-done)::after {
+  background: var(--hairline);
+}
+
 /* Weight scale. One series (our range) with parcel's ceiling as a threshold
  * annotation — dashed is reserved for exactly that. Built in HTML rather than
  * SVG so the labels keep real font sizes at phone width. */
