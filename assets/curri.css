@@ -883,41 +883,60 @@ section[id] {
   margin: 40px 0 0;
 }
 
-.scale-plot {
-  position: relative;
-  margin-top: 44px;
-  padding-bottom: 4px;
+.cmp-row {
+  display: grid;
+  grid-template-columns: 70px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
 }
 
-.scale-track {
-  height: 12px;
-  border-radius: 6px;
-  background: var(--teal);
-  transform: scaleX(0);
+.cmp-label {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--text-header-dark);
+}
+
+.cmp-track {
+  display: block;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--surface-dark-raised);
+}
+
+/* Emphasis, not two competing series: the subject is teal, the baseline it is
+ * measured against stays neutral. Widths are the two ceilings on one scale —
+ * 150 and 10,000 lbs — which is the whole argument. */
+.cmp-bar {
+  display: block;
+  height: 100%;
+  border-radius: 7px;
   transform-origin: left center;
+  transform: scaleX(0);
   transition: transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-.is-visible .scale-track,
-.scale-plot.is-visible .scale-track {
+.is-visible .cmp-bar {
   transform: scaleX(1);
 }
 
-.scale-threshold {
-  position: absolute;
-  top: -30px;
-  bottom: -10px;
-  border-left: 1px dashed var(--text-body-dark);
+.cmp-parcel {
+  width: 1.5%;
+  min-width: 8px;
+  background: var(--text-body-dark);
 }
 
-.scale-threshold-label {
-  position: absolute;
-  top: -4px;
-  left: 8px;
-  white-space: nowrap;
+.cmp-curri {
+  width: 100%;
+  background: var(--teal);
+  transition-delay: 120ms;
+}
+
+.cmp-value {
   font-size: 13px;
-  line-height: 1.2;
-  color: var(--text-header-dark);
+  color: var(--text-body-dark);
+  white-space: nowrap;
 }
 
 .scale-note {
@@ -927,18 +946,8 @@ section[id] {
   color: var(--text-body-dark);
 }
 
-.scale-axis {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid var(--hairline-dark);
-  font-size: 12px;
-  color: var(--text-body-dark);
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .scale-track {
+  .cmp-bar {
     transform: scaleX(1);
     transition: none;
   }
