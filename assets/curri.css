@@ -424,7 +424,42 @@ section[id] {
   margin-top: 14px;
 }
 
-/* Fleet cards */
+/* Product name under a block heading, e.g. "Curri Dedicated". Reads as a
+ * definition of the product, not an eyebrow, so it sits below the heading. */
+.split-copy .subline {
+  margin: 10px 0 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 1.35;
+  color: var(--text-body);
+}
+
+/* Group heading above the three solution blocks, plus the first block beneath
+ * it. Together they span one section's worth of padding, so the heading does
+ * not float in the middle of a full gap. */
+.section-lead {
+  padding-top: var(--section-y);
+  padding-bottom: 36px;
+}
+
+.section-follow {
+  padding-bottom: var(--section-y);
+}
+
+/* Fleet cards. Three across inside the split's media column, stacking to two
+ * and then one as the column narrows. */
+.fleet-grid {
+  margin-top: 0;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 1080px) {
+  .fleet-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
 .fleet-card {
   background: var(--surface);
   border: 1px solid var(--hairline);
