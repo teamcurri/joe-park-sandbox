@@ -448,14 +448,6 @@ section[id] {
   margin: -6px 0 2px -10px;
 }
 
-.ico {
-  display: block;
-  width: 24px;
-  height: 24px;
-  color: var(--text-header);
-  margin-bottom: 14px;
-}
-
 .fleet-card .n {
   font-family: var(--font-display);
   font-weight: 500;
@@ -980,13 +972,40 @@ section[id] {
 }
 
 /* Product grid */
+/* Mirrors curri.com's IndustryProductGrid: the icon sits white inside a dark
+ * 32px tile beside the copy, not bare above it. */
 .product-card {
-  display: block;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
   background: var(--surface);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-sm);
   padding: 20px;
   transition: background-color 150ms ease-out;
+}
+
+.product-icon {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--blacktop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-icon img {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.product-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .product-card {
@@ -1003,21 +1022,26 @@ section[id] {
 .product-card .n {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 17px;
-  line-height: 1.25;
+  font-size: 18px;
+  line-height: 1.2;
 }
 
 .product-card .d {
   margin-top: 6px;
   font-size: 14px;
-  line-height: 20px;
+  line-height: 18px;
   color: var(--text-body);
 }
 
 .product-card .go {
-  margin-top: 14px;
-  font-size: 13px;
-  font-weight: 600;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-body);
+  transition: color 150ms ease-out;
+}
+
+.product-card:hover .go {
   color: var(--text-header);
 }
 
