@@ -726,15 +726,12 @@ section[id] {
 }
 
 /* Weight-class proof */
-.proof-lead {
-  margin-top: 28px;
-  max-width: 40ch;
-}
-
+/* The figure owns the split's second column, so it no longer needs the narrow
+ * measure that used to keep it clear of the copy stacked above it. */
 .proof-lead .n {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: clamp(34px, 4vw, 46px);
+  font-size: clamp(44px, 5vw, 64px);
   line-height: 1.05;
   letter-spacing: -0.025em;
 }
