@@ -326,26 +326,21 @@ section[id] {
 .trust .wrap {
   padding-top: 32px;
   padding-bottom: 32px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
 }
 
-.trust-claim {
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: clamp(18px, 2vw, 22px);
-  line-height: 1.3;
-  letter-spacing: -0.01em;
-  max-width: 34ch;
-}
-
+/* Equal columns across the full strip. This used to sit beside a claim
+ * sentence in a space-between row; with the figures alone, they carry the
+ * width themselves rather than bunching at the left edge. */
 .trust-figures {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 32px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px 32px;
+}
+
+@media (min-width: 640px) {
+  .trust-figures {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .figure .n {
@@ -1115,9 +1110,38 @@ section[id] {
 }
 
 /* Closing CTA + footer */
-.closing .wrap {
+.closing > .wrap {
   padding-top: 80px;
   padding-bottom: 80px;
+  text-align: center;
+}
+
+.closing > .wrap .cta-row {
+  justify-content: center;
+}
+
+/* Closing headline. Matches the shared CTASection every Curri lander closes
+ * with: centred on a 720px measure at 32/36/40px, not the display scale the
+ * hero uses. */
+.h-cta {
+  margin: 0 auto;
+  max-width: 720px;
+  font-size: 32px;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+@media (min-width: 640px) {
+  .h-cta {
+    font-size: 36px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .h-cta {
+    font-size: 40px;
+  }
 }
 
 .site-footer {
