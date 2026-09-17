@@ -868,91 +868,11 @@ section[id] {
   background: var(--hairline);
 }
 
-/* Weight scale. One series (our range) with parcel's ceiling as a threshold
- * annotation — dashed is reserved for exactly that. Built in HTML rather than
- * SVG so the labels keep real font sizes at phone width. */
-.scale {
-  margin: 40px 0 0;
-}
-
 .proof-why {
   margin: 20px 0 0;
   max-width: 52ch;
   font-size: 15px;
   line-height: 22px;
-  color: var(--text-body-dark);
-}
-
-.proof-bridge {
-  margin: 36px 0 0;
-  max-width: 52ch;
-  font-size: 15px;
-  line-height: 22px;
-  color: var(--text-body-dark);
-}
-
-/* Two figures, not two bars. At a 66x ratio a bar chart cannot hold both: one
- * is invisible and the other reads as "100%", which is a proportion rather
- * than the scale the section is actually about. */
-.cmp-pair {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 28px;
-  margin-top: 28px;
-  padding-top: 28px;
-  border-top: 1px solid var(--hairline-dark);
-}
-
-/* Two lines reserved so both figures sit on the same baseline whether or not
- * the label wraps. */
-.cmp-label {
-  font-size: 14px;
-  line-height: 20px;
-  min-height: 40px;
-  color: var(--text-body-dark);
-  max-width: 28ch;
-}
-
-.cmp-figure {
-  margin-top: 8px;
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: clamp(28px, 3.2vw, 36px);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  color: var(--text-header-dark);
-}
-
-.scale-note {
-  margin-top: 18px;
-  font-size: 13px;
-  line-height: 19px;
-  color: var(--text-body-dark);
-}
-
-/* Quote */
-.quote {
-  margin: 36px 0 0;
-  padding: 28px;
-  background: var(--surface-dark-raised);
-  border: 1px solid var(--hairline-dark);
-  border-radius: var(--radius);
-}
-
-.quote blockquote {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(17px, 1.8vw, 21px);
-  line-height: 1.45;
-  color: var(--text-header-dark);
-  text-wrap: pretty;
-}
-
-.quote figcaption {
-  margin-top: 16px;
-  font-size: 13px;
-  line-height: 19px;
   color: var(--text-body-dark);
 }
 
