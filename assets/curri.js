@@ -4,6 +4,10 @@ document.querySelectorAll('.faq-item').forEach((item) => {
   const button = item.querySelector('.faq-q');
   const answer = item.querySelector('.faq-a');
 
+  /* Answers are open in the markup so the page still reads without JS. The
+   * accordion only exists once JS is here to reopen them. */
+  answer.hidden = true;
+
   button.addEventListener('click', () => {
     const isOpen = button.getAttribute('aria-expanded') === 'true';
 

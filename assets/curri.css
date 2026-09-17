@@ -617,10 +617,18 @@ section[id] {
   margin-bottom: 6px;
 }
 
+.day {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Bars hang from the bottom of the column so the 3PL baseline lines up across
+ * the week and Curri's capacity reads as stacked on top of it. */
 .day .bars {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  margin-top: auto;
 }
 
 .bar {
@@ -658,6 +666,24 @@ section[id] {
   color: var(--blacktop);
 }
 
+/* The 3PL baseline. Deliberately the tallest bar and the only unbranded one:
+ * the partner network keeps the bulk of the week, and Curri sits on top of it
+ * rather than replacing it. */
+.bar-muted {
+  height: 64px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+  color: var(--text-body);
+}
+
+/* Below this the columns are too narrow for a label to sit inside a bar, so
+ * the legend carries the key on its own. The text stays in the DOM. */
+@media (max-width: 1023px) {
+  .bar {
+    font-size: 0;
+  }
+}
+
 .legend {
   display: flex;
   flex-wrap: wrap;
@@ -685,6 +711,11 @@ section[id] {
 
 .dot-extra {
   background: var(--hivis);
+}
+
+.dot-muted {
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
 }
 
 /* Weight-class proof */
@@ -986,13 +1017,30 @@ section[id] {
 }
 
 /* FAQ */
+/* Two-column FAQ, matching the shared FAQSection every other Curri lander
+ * renders: a fixed intro column beside the accordion. */
 .faq {
-  max-width: 820px;
-  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+
+@media (min-width: 1024px) {
+  .faq {
+    grid-template-columns: 304px 1fr;
+    gap: 72px;
+  }
+}
+
+.faq-intro .body {
+  margin-top: 8px;
+}
+
+.faq-intro .cta-row {
+  margin-top: 24px;
 }
 
 .faq-list {
-  margin-top: 32px;
   border-top: 1px solid var(--hairline);
 }
 
