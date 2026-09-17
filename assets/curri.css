@@ -328,13 +328,15 @@ section[id] {
   padding-bottom: 32px;
 }
 
-/* Equal columns across the full strip. This used to sit beside a claim
- * sentence in a space-between row; with the figures alone, they carry the
- * width themselves rather than bunching at the left edge. */
+/* Cards, not a ruled strip. A strip only reads as one when left-aligned copy
+ * sits beside it to anchor the row; with the figures alone, equal columns of
+ * very different content lengths just look like arbitrary gaps. Curri hit the
+ * same thing and moved to cards in components/v2/hero/StatCards.tsx. */
 .trust-figures {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px 32px;
+  gap: 12px;
+  margin: 0;
 }
 
 @media (min-width: 640px) {
@@ -343,7 +345,16 @@ section[id] {
   }
 }
 
+.figure {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 20px 16px;
+  text-align: center;
+}
+
 .figure .n {
+  margin: 0;
   font-family: var(--font-display);
   font-weight: 500;
   font-size: 28px;
@@ -352,10 +363,11 @@ section[id] {
 }
 
 .figure .l {
-  margin-top: 4px;
+  margin: 6px 0 0;
   font-size: 13px;
   line-height: 18px;
   color: var(--text-body);
+  text-wrap: pretty;
 }
 
 /* Card grids */
