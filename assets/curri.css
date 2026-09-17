@@ -726,6 +726,27 @@ section[id] {
 }
 
 /* Weight-class proof */
+/* The proof band is punctuation between two light sections, so it carries more
+ * vertical air than a standard section. */
+.proof-band {
+  padding-top: 88px;
+  padding-bottom: 88px;
+}
+
+/* A 64px figure sitting 40px from a headline reads as crowding rather than as
+ * a pair, and the figure needs far less width than the copy beside it. Wider
+ * gutter, and the columns split in the copy's favour. Row gap stays at 40px so
+ * the stacked layout below 900px is unaffected. */
+.proof-split {
+  gap: 40px 80px;
+}
+
+@media (min-width: 900px) {
+  .proof-split {
+    grid-template-columns: 1.15fr 1fr;
+  }
+}
+
 /* The figure owns the split's second column, so it no longer needs the narrow
  * measure that used to keep it clear of the copy stacked above it. */
 .proof-lead .n {
