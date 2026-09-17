@@ -891,81 +891,43 @@ section[id] {
   color: var(--text-body-dark);
 }
 
-/* Label above the bar rather than beside it, so each side can say what it
- * actually measures instead of being squeezed into one word. */
-.cmp-item {
-  margin-top: 20px;
+/* Two figures, not two bars. At a 66x ratio a bar chart cannot hold both: one
+ * is invisible and the other reads as "100%", which is a proportion rather
+ * than the scale the section is actually about. */
+.cmp-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 28px;
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--hairline-dark);
 }
 
-.cmp-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 8px;
-}
-
+/* Two lines reserved so both figures sit on the same baseline whether or not
+ * the label wraps. */
 .cmp-label {
   font-size: 14px;
   line-height: 20px;
-  color: var(--text-header-dark);
+  min-height: 40px;
+  color: var(--text-body-dark);
+  max-width: 28ch;
 }
 
-.cmp-value {
+.cmp-figure {
+  margin-top: 8px;
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 15px;
+  font-size: clamp(28px, 3.2vw, 36px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   color: var(--text-header-dark);
-  white-space: nowrap;
 }
-
-.cmp-track {
-  display: block;
-  height: 14px;
-  border-radius: 7px;
-  background: var(--surface-dark-raised);
-}
-
-/* Emphasis, not two competing series: the subject is teal, the baseline it is
- * measured against stays neutral. Widths are the two figures on one scale. */
-.cmp-bar {
-  display: block;
-  height: 100%;
-  border-radius: 7px;
-  transform-origin: left center;
-  transform: scaleX(0);
-  transition: transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.is-visible .cmp-bar {
-  transform: scaleX(1);
-}
-
-.cmp-parcel {
-  width: 1.5%;
-  min-width: 8px;
-  background: var(--text-body-dark);
-}
-
-.cmp-curri {
-  width: 100%;
-  background: var(--teal);
-  transition-delay: 120ms;
-}
-
 
 .scale-note {
   margin-top: 18px;
   font-size: 13px;
   line-height: 19px;
   color: var(--text-body-dark);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cmp-bar {
-    transform: scaleX(1);
-    transition: none;
-  }
 }
 
 /* Quote */
