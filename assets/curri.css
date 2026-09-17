@@ -718,10 +718,31 @@ section[id] {
   color: var(--text-body);
 }
 
-.pod-shot svg {
-  width: 44px;
-  height: 44px;
-  color: rgba(28, 28, 28, 0.3);
+/* Filled tiles rather than an empty frame. Per Curri's own Paperwork surface:
+ * a placeholder promises something will arrive, which makes the card read as a
+ * form being filled in instead of a finished record. These are the photos. */
+.pod-tiles {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.pod-tile {
+  flex: 1;
+  height: 42px;
+  border-radius: 4px;
+  border: 1px solid var(--hairline);
+  background: color-mix(in srgb, var(--cement) 30%, var(--surface));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Stroked as a graphic, not inherited as a text colour — teal never sets type. */
+.pod-tile svg {
+  width: 13px;
+  height: 13px;
+  stroke: var(--teal);
 }
 
 .pod-scrawl {
