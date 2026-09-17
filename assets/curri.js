@@ -1,3 +1,5 @@
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 document.querySelectorAll('.faq-item').forEach((item) => {
   const button = item.querySelector('.faq-q');
   const answer = item.querySelector('.faq-a');
@@ -16,10 +18,49 @@ document.querySelectorAll('.faq-item').forEach((item) => {
   });
 });
 
+/* Count-up. The final value is the element's own text, so it is already correct
+ * for no-JS, screen readers and reduced-motion — this only replays it. */
+function countUp(el) {
+  if (el.dataset.counted) return;
+  el.dataset.counted = '1';
+
+  const final = el.textContent;
+  const match = final.match(/^(\D*)([\d,]+(?:\.\d+)?)(.*)$/);
+  if (!match || reduceMotion) return;
+
+  const [, prefix, digits, suffix] = match;
+  const target = Number(digits.replace(/,/g, ''));
+  if (!Number.isFinite(target)) return;
+
+  const decimals = (digits.split('.')[1] || '').length;
+  const grouped = digits.includes(',');
+  const start = performance.now();
+  const duration = 900;
+
+  function frame(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const value = target * eased;
+    el.textContent =
+      prefix +
+      value.toLocaleString('en-US', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+        useGrouping: grouped,
+      }) +
+      suffix;
+    if (t < 1) requestAnimationFrame(frame);
+    else el.textContent = final;
+  }
+
+  requestAnimationFrame(frame);
+}
+
 /* Reveal on scroll. Deliberately a plain scroll handler rather than an
  * IntersectionObserver: observer entries are delivered asynchronously, so a
  * fast or programmatic scroll can leave elements permanently hidden. */
 const pending = Array.from(document.querySelectorAll('.reveal'));
+const header = document.querySelector('.site-header');
 let queued = false;
 
 function revealInView() {
@@ -30,17 +71,22 @@ function revealInView() {
     const el = pending[i];
     if (el.getBoundingClientRect().top > limit) continue;
     const delay = Number(el.dataset.revealDelay || 0);
-    setTimeout(() => el.classList.add('is-visible'), delay);
+    setTimeout(() => {
+      el.classList.add('is-visible');
+      if (el.hasAttribute('data-countup')) countUp(el);
+      el.querySelectorAll('[data-countup]').forEach(countUp);
+    }, delay);
     pending.splice(i, 1);
   }
 }
 
-function schedule() {
+function onScroll() {
+  if (header) header.classList.toggle('is-stuck', window.scrollY > 8);
   if (queued || !pending.length) return;
   queued = true;
   requestAnimationFrame(revealInView);
 }
 
 revealInView();
-window.addEventListener('scroll', schedule, { passive: true });
-window.addEventListener('resize', schedule);
+window.addEventListener('scroll', onScroll, { passive: true });
+window.addEventListener('resize', onScroll);

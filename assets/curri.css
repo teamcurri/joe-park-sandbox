@@ -233,6 +233,11 @@ section[id] {
   background: rgba(251, 251, 249, 0.92);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--hairline);
+  transition: box-shadow 200ms ease-out;
+}
+
+.site-header.is-stuck {
+  box-shadow: var(--shadow);
 }
 
 .site-header .wrap {
@@ -430,6 +435,29 @@ section[id] {
   min-height: 140px;
 }
 
+/* Silhouettes share one viewBox and baseline, so the four cards read as a size
+ * progression rather than four unrelated drawings. */
+.veh {
+  display: block;
+  width: 100%;
+  max-width: 132px;
+  height: auto;
+  fill: var(--blacktop);
+  margin-bottom: 2px;
+}
+
+.veh .hub {
+  fill: var(--surface);
+}
+
+.ico {
+  display: block;
+  width: 24px;
+  height: 24px;
+  color: var(--text-header);
+  margin-bottom: 14px;
+}
+
 .fleet-card .n {
   font-family: var(--font-display);
   font-weight: 500;
@@ -577,7 +605,21 @@ section[id] {
   justify-content: center;
   font-size: 11px;
   font-weight: 600;
+  transform: scaleY(0);
+  transform-origin: bottom center;
+  transition: transform 500ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
+
+.is-visible .bar {
+  transform: scaleY(1);
+}
+
+/* Bars grow left to right across the week. */
+.day:nth-child(2) .bar { transition-delay: 60ms; }
+.day:nth-child(3) .bar { transition-delay: 120ms; }
+.day:nth-child(4) .bar { transition-delay: 180ms; }
+.day:nth-child(5) .bar { transition-delay: 240ms; }
+.day:nth-child(6) .bar { transition-delay: 300ms; }
 
 .bar-base {
   height: 52px;
@@ -655,6 +697,82 @@ section[id] {
   color: var(--text-body);
 }
 
+/* Weight scale. One series (our range) with parcel's ceiling as a threshold
+ * annotation — dashed is reserved for exactly that. Built in HTML rather than
+ * SVG so the labels keep real font sizes at phone width. */
+.scale {
+  margin: 40px 0 0;
+}
+
+.scale-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 1.3;
+  color: var(--text-header-dark);
+}
+
+.scale-plot {
+  position: relative;
+  margin-top: 44px;
+  padding-bottom: 4px;
+}
+
+.scale-track {
+  height: 12px;
+  border-radius: 6px;
+  background: var(--teal);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.is-visible .scale-track,
+.scale-plot.is-visible .scale-track {
+  transform: scaleX(1);
+}
+
+.scale-threshold {
+  position: absolute;
+  top: -30px;
+  bottom: -10px;
+  border-left: 1px dashed var(--text-body-dark);
+}
+
+.scale-threshold-label {
+  position: absolute;
+  top: -4px;
+  left: 8px;
+  white-space: nowrap;
+  font-size: 13px;
+  line-height: 1.2;
+  color: var(--text-header-dark);
+}
+
+.scale-note {
+  margin-top: 18px;
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--text-body-dark);
+}
+
+.scale-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--hairline-dark);
+  font-size: 12px;
+  color: var(--text-body-dark);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scale-track {
+    transform: scaleX(1);
+    transition: none;
+  }
+}
+
 /* Quote */
 .quote {
   margin: 36px 0 0;
@@ -691,8 +809,15 @@ section[id] {
   transition: background-color 150ms ease-out;
 }
 
+.product-card {
+  transition: background-color 150ms ease-out, transform 150ms ease-out,
+    box-shadow 150ms ease-out;
+}
+
 .product-card:hover {
   background: var(--surface-sunken);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
 }
 
 .product-card .n {
@@ -860,6 +985,19 @@ section[id] {
 
   .js .reveal {
     opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .bar,
+  .is-visible .bar {
+    transform: scaleY(1);
+    transition: none;
+    transition-delay: 0ms;
+  }
+
+  .product-card,
+  .product-card:hover {
     transform: none;
     transition: none;
   }
