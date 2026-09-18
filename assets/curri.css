@@ -733,35 +733,46 @@ section[id] {
   padding-bottom: 88px;
 }
 
-/* A 64px figure sitting 40px from a headline reads as crowding rather than as
- * a pair, and the figure needs far less width than the copy beside it. Wider
- * gutter, and the columns split in the copy's favour. Row gap stays at 40px so
- * the stacked layout below 900px is unaffected. */
-.proof-split {
-  gap: 40px 80px;
+/* The band carries a single fact, so the number is the section rather than an
+ * item inside it. At body scale it read as one more small text block on a lot
+ * of black; at display scale it fills the band on its own and the words sit
+ * against it. */
+.proof-figure {
+  margin-top: 36px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: center;
 }
 
 @media (min-width: 900px) {
-  .proof-split {
-    grid-template-columns: 1.15fr 1fr;
+  .proof-figure {
+    grid-template-columns: auto 1fr;
+    gap: 56px;
   }
 }
 
-/* The figure owns the split's second column, so it no longer needs the narrow
- * measure that used to keep it clear of the copy stacked above it. */
-.proof-lead .n {
+.proof-figure .n {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: clamp(44px, 5vw, 64px);
-  line-height: 1.05;
-  letter-spacing: -0.025em;
+  font-size: clamp(48px, 9vw, 120px);
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
 }
 
-.proof-lead .l {
-  margin-top: 8px;
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--text-body-dark);
+.proof-figure-copy {
+  max-width: 44ch;
+}
+
+/* The label graduates from caption to statement now that it is the only copy
+ * holding the right of the figure. */
+.proof-figure .l {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(17px, 1.5vw, 20px);
+  line-height: 1.35;
 }
 
 .footnote {
@@ -960,7 +971,7 @@ section[id] {
 }
 
 .proof-why {
-  margin: 20px 0 0;
+  margin: 12px 0 0;
   max-width: 52ch;
   font-size: 15px;
   line-height: 22px;
