@@ -102,6 +102,7 @@
   .refresh-btn:hover { border-color: var(--series-1); color: var(--text-primary); }
   .refresh-btn.spinning svg { animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .refresh-status { font-size: 11px; color: var(--bad); width: 100%; text-align: right; }
 
   .callout {
     display: flex; gap: 10px; align-items: flex-start;
@@ -215,12 +216,13 @@
       <h1>Website Attribution</h1>
       <p class="sub">Leads, signups, first orders and revenue by landing page, content group and channel &mdash; curri.com</p>
     </div>
-    <div style="display:flex; align-items:center; gap:10px;">
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
       <div class="updated-badge" id="updatedBadge"><span class="dot"></span>Loading&hellip;</div>
-      <button class="refresh-btn" id="refreshBtn" title="Reload the data on this page. This only re-reads the latest saved snapshot &mdash; it does not pull new numbers from HubSpot (that happens once a day automatically).">
+      <button class="refresh-btn" id="refreshBtn" title="On the live dashboard link, this pulls the 5 KPI numbers straight from HubSpot using your own connection. Trends, breakdowns and the page list still update via the daily job. On a static copy of this page, it just reloads the last saved data.">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2v3.5H10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Refresh
       </button>
+      <div class="refresh-status" id="refreshStatus" style="display:none;"></div>
     </div>
   </header>
 
@@ -372,6 +374,25 @@
     el.innerHTML = head + body;
   }
 
+  function categoryOf(url) {
+    const p = url.replace(/^https?:\/\/[^/]+/, '');
+    if (p === '/' || p === '') return 'home';
+    if (p.startsWith('/blog/')) return 'blog';
+    if (p.startsWith('/industries/')) return 'industry';
+    if (p.startsWith('/locations/')) return 'location';
+    if (p.startsWith('/deliveries/')) return 'delivery';
+    if (p.startsWith('/fleet/') || p.startsWith('/vehicles/')) return 'vehicle';
+    if (p.startsWith('/careers/')) return 'careers';
+    return 'product';
+  }
+
+  function titleFromUrl(url) {
+    const p = url.replace(/^https?:\/\/[^/]+/, '').replace(/^\//, '').replace(/\/$/, '');
+    if (!p) return 'Home';
+    const last = p.split('/').pop();
+    return last.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
   // Re-runnable elements get their listeners stripped first (clone-and-replace)
   // so calling main() again from the Refresh button never stacks duplicate handlers.
   function rewire(id) {
@@ -382,6 +403,45 @@
     return clone;
   }
 
+  // Two deployments share this one file: the Claude Artifact (has window.claude,
+  // reads/writes the live `db` capability) and the static GitHub Pages copy (no
+  // window.claude at all, reads the committed data.json). Detect and branch once here.
+  let currentDb = null;
+
+  async function loadFromDb(db) {
+    const [metaDoc, kpiDoc, trends, pages, breakdowns] = await Promise.all([
+      db.doc('meta/status').get().catch(() => null),
+      db.doc('kpis/current').get().catch(() => null),
+      db.collection('trends').get().catch(() => ({ docs: [] })),
+      db.collection('pages').get().catch(() => ({ docs: [] })),
+      db.collection('breakdowns').get().catch(() => ({ docs: [] })),
+    ]);
+    return {
+      meta: metaDoc && metaDoc.exists ? metaDoc.data() : {},
+      kpis: kpiDoc && kpiDoc.exists ? kpiDoc.data() : {},
+      trends: (trends.docs || []).map(d => d.data()),
+      pages: (pages.docs || []).map(d => d.data()),
+      breakdowns: (breakdowns.docs || []).map(d => d.data()),
+    };
+  }
+
+  async function loadSnapshot() {
+    if (typeof window !== 'undefined' && window.claude && typeof window.claude.use === 'function') {
+      try {
+        const db = await window.claude.use('db');
+        if (db) {
+          currentDb = db;
+          return await loadFromDb(db);
+        }
+      } catch (e) {
+        // fall through to the static file
+      }
+    }
+    currentDb = null;
+    const res = await fetch('./data.json', { cache: 'no-store' });
+    return await res.json();
+  }
+
   async function main() {
     rewire('pageSearch');
     rewire('tabBtnOverview');
@@ -389,10 +449,9 @@
 
     let snapshot;
     try {
-      const res = await fetch('./data.json', { cache: 'no-store' });
-      snapshot = await res.json();
+      snapshot = await loadSnapshot();
     } catch (e) {
-      document.getElementById('kpiGrid').innerHTML = '<div class="empty-note">Could not load data.json.</div>';
+      document.getElementById('kpiGrid').innerHTML = '<div class="empty-note">Could not load data.</div>';
       return;
     }
 
@@ -550,12 +609,142 @@
     }));
   }
 
+  // --- On-demand HubSpot pull (Claude Artifact only; needs window.claude + the mcp capability) ---
+
+  function parseCountOnly(payload) {
+    if (payload && typeof payload === 'object' && typeof payload.instructions === 'string') {
+      const m = payload.instructions.replace(/,/g, '').match(/(\d+)/);
+      if (m) return parseInt(m[1], 10);
+    }
+    return null;
+  }
+
+  function parseTsvRows(payload) {
+    try {
+      const text = payload.results[0].content;
+      const marker = 'Dataset TSV:\n';
+      const idx = text.indexOf(marker);
+      if (idx === -1) return null;
+      let block = text.slice(idx + marker.length);
+      const showingIdx = block.search(/\n\nShowing/);
+      if (showingIdx !== -1) block = block.slice(0, showingIdx);
+      const lines = block.split('\n').filter(l => l.length);
+      if (!lines.length) return null;
+      return { header: lines[0].split('\t'), rows: lines.slice(1).map(l => l.split('\t')) };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function mcpErrorMessage(err) {
+    const code = err && err.code;
+    if (['needs_reauth', 'server_not_connected', 'selection_required', 'consent_required'].includes(code)) {
+      return 'Connect HubSpot for this page in claude.ai Settings → Connectors, then try again.';
+    }
+    if (['not_in_manifest', 'blocked_by_policy', 'approval_required', 'not_granted'].includes(code)) {
+      return 'This page is not allowed to query HubSpot right now.';
+    }
+    if (['server_unavailable', 'rate_limited', 'upstream_error'].includes(code)) {
+      return 'HubSpot is temporarily unavailable — try again in a moment.';
+    }
+    return 'Could not pull fresh HubSpot numbers (' + (code || 'unknown error') + '). Showing the last saved data instead.';
+  }
+
+  // Pulls just the 5 headline KPI numbers live from HubSpot and writes them to the
+  // artifact's db. Trends/breakdowns/pages are intentionally out of scope here —
+  // the query_crm_data tool's response shapes for those (grouped TSV blocks) are
+  // harder to parse reliably client-side; those keep updating via the daily job.
+  async function refreshFromHubSpot(statusEl) {
+    const mcp = await window.claude.use('mcp');
+    if (!mcp) throw { code: 'not_granted', message: 'mcp capability unavailable' };
+
+    const queries = {
+      newWebLeads: "SELECT COUNT(*) FROM CONTACT WHERE web_conversion_type IS NOT NULL",
+      demoRequests: "SELECT COUNT(*) FROM CONTACT WHERE web_conversion_type = 'demo'",
+      signups: "SELECT COUNT(*) FROM CONTACT WHERE db_signed_up_at IS NOT NULL",
+      firstOrders: "SELECT COUNT(*) FROM CONTACT WHERE db_first_order_booked_at IS NOT NULL",
+      revenue: "SELECT COUNT(*), SUM(db_total_revenue) FROM CONTACT WHERE db_total_revenue IS NOT NULL",
+    };
+
+    const settled = await Promise.all(
+      Object.entries(queries).map(([key, sql]) =>
+        mcp.callTool('HubSpot', 'query_crm_data', { sql }, { cache: false })
+          .then(r => ({ key, payload: r.payload, error: null }))
+          .catch(error => ({ key, payload: null, error }))
+      )
+    );
+
+    const values = {};
+    let firstError = null;
+    settled.forEach(({ key, payload, error }) => {
+      if (error) { if (!firstError) firstError = error; return; }
+      if (key === 'revenue') {
+        const tsv = parseTsvRows(payload);
+        values.totalRevenueCumulative = tsv && tsv.rows[0] ? parseFloat(tsv.rows[0][1]) : null;
+        return;
+      }
+      let n = parseCountOnly(payload);
+      if (n == null) {
+        const tsv = parseTsvRows(payload);
+        if (tsv && tsv.rows[0]) n = parseInt(tsv.rows[0][tsv.rows[0].length - 1], 10);
+      }
+      values[key] = n;
+    });
+
+    const gotAnything = Object.values(values).some(v => v != null);
+    if (!gotAnything && firstError) throw firstError;
+
+    const db = currentDb;
+    if (!db) throw { code: 'not_granted', message: 'no db handle' };
+
+    const [kpiSnap, metaSnap] = await Promise.all([
+      db.doc('kpis/current').get(),
+      db.doc('meta/status').get().catch(() => null),
+    ]);
+    const prevKpi = kpiSnap.exists ? kpiSnap.data() : {};
+    const prevMeta = metaSnap && metaSnap.exists ? metaSnap.data() : {};
+
+    const now = new Date();
+    const prevUpdated = prevMeta.lastUpdated ? new Date(prevMeta.lastUpdated) : null;
+    const monthRolled = !!prevUpdated &&
+      (prevUpdated.getUTCFullYear() !== now.getUTCFullYear() || prevUpdated.getUTCMonth() !== now.getUTCMonth());
+
+    const next = Object.assign({}, prevKpi);
+    ['newWebLeads', 'demoRequests', 'signups', 'firstOrders'].forEach(k => {
+      if (values[k] == null) return;
+      if (monthRolled) next[k + 'Prior'] = prevKpi[k] != null ? prevKpi[k] : next[k + 'Prior'];
+      next[k] = values[k];
+    });
+    if (values.totalRevenueCumulative != null) next.totalRevenueCumulative = values.totalRevenueCumulative;
+
+    await db.doc('kpis/current').set(next);
+    await db.doc('meta/status').update({ lastUpdated: now.toISOString() });
+
+    if (firstError && statusEl) {
+      statusEl.textContent = 'Some numbers may be stale: ' + mcpErrorMessage(firstError);
+      statusEl.style.display = 'block';
+    }
+  }
+
   main();
   document.getElementById('refreshBtn').addEventListener('click', async () => {
     const btn = document.getElementById('refreshBtn');
+    const statusEl = document.getElementById('refreshStatus');
+    if (statusEl) { statusEl.style.display = 'none'; statusEl.textContent = ''; }
     btn.classList.add('spinning');
     btn.disabled = true;
     try {
+      const canPullLive = typeof window !== 'undefined' && window.claude && typeof window.claude.use === 'function';
+      if (canPullLive) {
+        try {
+          await refreshFromHubSpot(statusEl);
+        } catch (err) {
+          if (statusEl) {
+            statusEl.textContent = mcpErrorMessage(err);
+            statusEl.style.display = 'block';
+          }
+        }
+      }
       await main();
     } finally {
       btn.classList.remove('spinning');
