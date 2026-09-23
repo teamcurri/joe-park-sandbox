@@ -237,6 +237,10 @@
   </div>
 
   <div class="tab-panel active" id="tabOverview">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+      <div class="cat-filters" id="rangeFilters"></div>
+      <p class="legend-note" id="rangeNote" style="margin:0;"></p>
+    </div>
     <div class="kpi-grid" id="kpiGrid">
       <div class="skeleton">Loading KPIs&hellip;</div>
     </div>
@@ -300,25 +304,26 @@
   const MONTH_LABELS = { '01':'Jan','02':'Feb','03':'Mar','04':'Apr','05':'May','06':'Jun','07':'Jul','08':'Aug','09':'Sep','10':'Oct','11':'Nov','12':'Dec' };
   const monthShort = m => { const [y, mo] = m.split('-'); return MONTH_LABELS[mo] + " '" + y.slice(2); };
 
-  function deltaBadge(current, prior) {
+  function deltaBadge(current, prior, noCompare) {
+    if (noCompare) return { cls: 'flat', text: 'no prior period to compare' };
     if (prior == null || prior === 0) {
       if (current > 0) return { cls: 'up', text: 'new this period' };
       return { cls: 'flat', text: 'no change' };
     }
     const pct = ((current - prior) / prior) * 100;
-    if (Math.abs(pct) < 1) return { cls: 'flat', text: 'flat vs last month' };
+    if (Math.abs(pct) < 1) return { cls: 'flat', text: 'flat vs prior period' };
     const cls = pct > 0 ? 'up' : 'down';
     const arrow = pct > 0 ? '↑' : '↓';
-    return { cls, text: arrow + ' ' + Math.abs(Math.round(pct)) + '% vs last month' };
+    return { cls, text: arrow + ' ' + Math.abs(Math.round(pct)) + '% vs prior period' };
   }
 
-  function kpiCard(label, value, isUsd, current, prior) {
-    const d = deltaBadge(current, prior);
+  function kpiCard(label, value, isUsd, current, prior, periodLabel, noCompare) {
+    const d = deltaBadge(current, prior, noCompare);
     return '<div class="kpi-card">' +
       '<div class="label">' + label + '</div>' +
       '<div class="value">' + (isUsd ? fmtUsd(value) : fmtInt(value)) + '</div>' +
       '<div class="delta ' + d.cls + '">' + d.text + '</div>' +
-      '<div class="period">this month vs last month</div>' +
+      '<div class="period">' + (periodLabel || 'this month vs last month') + '</div>' +
       '</div>';
   }
 
@@ -476,13 +481,85 @@
       document.getElementById('revenueCalloutText').textContent = meta.revenueGapNote;
     }
 
-    // KPI row
-    document.getElementById('kpiGrid').innerHTML =
-      kpiCard('New Web Leads', kpi.newWebLeads, false, kpi.newWebLeads, kpi.newWebLeadsPrior) +
-      kpiCard('Demo Requests', kpi.demoRequests, false, kpi.demoRequests, kpi.demoRequestsPrior) +
-      kpiCard('Signups', kpi.signups, false, kpi.signups, kpi.signupsPrior) +
-      kpiCard('First Orders', kpi.firstOrders, false, kpi.firstOrders, kpi.firstOrdersPrior) +
-      kpiCard('Total Revenue (lifetime)', kpi.totalRevenueCumulative, true, null, null);
+    // KPI row — date range selector. "This Month" reads the live kpis/current doc
+    // directly (the only range the on-demand HubSpot refresh button keeps fresh); every
+    // other range is summed client-side from the monthly `trends` data already on the page.
+    const RANGE_OPTIONS = [
+      { key: 'this_month', label: 'This Month', months: 1 },
+      { key: 'last_3', label: 'Last 3 Months', months: 3 },
+      { key: 'last_6', label: 'Last 6 Months', months: 6 },
+      { key: 'all', label: 'All Available', months: null },
+    ];
+    let selectedRange = 'this_month';
+    const rangeFiltersEl = document.getElementById('rangeFilters');
+    const rangeNoteEl = document.getElementById('rangeNote');
+
+    function monthsForMetric(metric) {
+      return Array.from(new Set(trendDocs.filter(d => d.metric === metric).map(d => d.month))).sort();
+    }
+
+    function sumWindow(metric, field, windowSize) {
+      const months = monthsForMetric(metric);
+      if (!months.length) return { current: null, prior: null };
+      const byMonth = {};
+      trendDocs.filter(d => d.metric === metric).forEach(d => { byMonth[d.month] = d; });
+      const n = windowSize == null ? months.length : windowSize;
+      const currentMonths = months.slice(Math.max(0, months.length - n));
+      const priorMonths = months.slice(Math.max(0, months.length - 2 * n), Math.max(0, months.length - n));
+      const sum = (list) => list.length ? list.reduce((s, m) => s + (Number(byMonth[m] && byMonth[m][field]) || 0), 0) : null;
+      return { current: sum(currentMonths), prior: priorMonths.length ? sum(priorMonths) : null };
+    }
+
+    function kpiForRange(key, rangeOpt) {
+      if (rangeOpt.key === 'this_month') {
+        // Live figures, refreshable on demand — read straight off kpis/current.
+        if (key === 'totalRevenueCumulative') return { current: kpi.totalRevenueCumulative, prior: null };
+        return { current: kpi[key], prior: kpi[key + 'Prior'] };
+      }
+      const metricMap = { newWebLeads: 'new_web_leads', demoRequests: 'demo_requests', signups: 'signups', firstOrders: 'first_orders' };
+      if (key === 'totalRevenueCumulative') return sumWindow('first_orders', 'revenue', rangeOpt.months);
+      return sumWindow(metricMap[key], 'value', rangeOpt.months);
+    }
+
+    function renderKpiRow() {
+      const rangeOpt = RANGE_OPTIONS.find(r => r.key === selectedRange) || RANGE_OPTIONS[0];
+      const nwl = kpiForRange('newWebLeads', rangeOpt);
+      const dr = kpiForRange('demoRequests', rangeOpt);
+      const su = kpiForRange('signups', rangeOpt);
+      const fo = kpiForRange('firstOrders', rangeOpt);
+      const rev = kpiForRange('totalRevenueCumulative', rangeOpt);
+      const periodLabel = rangeOpt.key === 'this_month' ? 'this month vs last month'
+        : rangeOpt.key === 'all' ? 'all available history'
+        : rangeOpt.label.toLowerCase() + ' vs prior period';
+
+      const noCompare = rangeOpt.key === 'all';
+      document.getElementById('kpiGrid').innerHTML =
+        kpiCard('New Web Leads', nwl.current, false, nwl.current, nwl.prior, periodLabel, noCompare) +
+        kpiCard('Demo Requests', dr.current, false, dr.current, dr.prior, periodLabel, noCompare) +
+        kpiCard('Signups', su.current, false, su.current, su.prior, periodLabel, noCompare) +
+        kpiCard('First Orders', fo.current, false, fo.current, fo.prior, periodLabel, noCompare) +
+        kpiCard(rangeOpt.key === 'all' ? 'Total Revenue (lifetime)' : 'Revenue (period)', rangeOpt.key === 'all' ? kpi.totalRevenueCumulative : rev.current, true, rangeOpt.key === 'all' ? null : rev.current, rangeOpt.key === 'all' ? null : rev.prior, periodLabel, true);
+
+      rangeNoteEl.textContent = rangeOpt.key === 'this_month'
+        ? 'This Month reflects live data — refreshable with the button above.'
+        : 'Revenue and other ranges are summed from the monthly history below, updated by the daily job.';
+    }
+
+    function renderRangeFilters() {
+      rangeFiltersEl.innerHTML = RANGE_OPTIONS.map(r =>
+        '<button class="cat-pill' + (r.key === selectedRange ? ' active' : '') + '" data-range="' + r.key + '">' + r.label + '</button>'
+      ).join('');
+      rangeFiltersEl.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectedRange = btn.dataset.range;
+          renderRangeFilters();
+          renderKpiRow();
+        });
+      });
+    }
+
+    renderRangeFilters();
+    renderKpiRow();
 
     // Trend charts
     const byMetric = m => trendDocs.filter(d => d.metric === m).sort((a,b) => a.month.localeCompare(b.month)).map(d => ({ label: monthShort(d.month), value: d.value }));
