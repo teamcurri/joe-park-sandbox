@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Website Attribution</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Curri.com lead, signup and revenue attribution by landing page, content group and channel." />
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --series-1:       #2a78d6;
+    --series-2:       #eb6834;
+    --series-3:       #1baf7a;
+    --series-4:       #eda100;
+    --series-5:       #e87ba4;
+    --good:           #006300;
+    --good-bg:        #e6f4e6;
+    --bad:            #b8433f;
+    --bad-bg:         #fbeceb;
+    --warn:           #fab219;
+    --warn-bg:        #fdf3de;
+    --warn-text:      #7a5400;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page-plane:     #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --series-1:       #3987e5;
+      --series-2:       #d95926;
+      --series-3:       #199e70;
+      --series-4:       #c98500;
+      --series-5:       #d55181;
+      --good:           #0ca30c;
+      --good-bg:        #123312;
+      --bad:            #e66767;
+      --bad-bg:         #391414;
+      --warn:           #c98500;
+      --warn-bg:        #332a0f;
+      --warn-text:      #f0c874;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page-plane:     #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255,255,255,0.10);
+    --series-1:       #3987e5;
+    --series-2:       #d95926;
+    --series-3:       #199e70;
+    --series-4:       #c98500;
+    --series-5:       #d55181;
+    --good:           #0ca30c;
+    --good-bg:        #123312;
+    --bad:            #e66767;
+    --bad-bg:         #391414;
+    --warn:           #c98500;
+    --warn-bg:        #332a0f;
+    --warn-text:      #f0c874;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page-plane);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 64px; }
+
+  header.top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+  header.top h1 { font-size: 22px; margin: 0 0 4px; }
+  header.top p.sub { margin: 0; color: var(--text-secondary); font-size: 13px; }
+  .updated-badge { font-size: 12px; color: var(--text-muted); text-align: right; }
+  .updated-badge .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--good); margin-right: 5px; }
+
+  .callout {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--warn-bg); border: 1px solid var(--warn); border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 22px; font-size: 13px; color: var(--warn-text);
+  }
+  .callout svg { flex: none; margin-top: 1px; }
+  .callout strong { color: var(--text-primary); }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--gridline); }
+  .tab-btn {
+    appearance: none; border: none; background: none; cursor: pointer;
+    padding: 9px 14px; font-size: 13px; font-weight: 600; color: var(--text-muted);
+    border-bottom: 2px solid transparent; font-family: inherit;
+  }
+  .tab-btn[aria-selected="true"] { color: var(--text-primary); border-bottom-color: var(--series-1); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 22px; }
+  .kpi-card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .kpi-card .label { font-size: 12px; color: var(--text-secondary); font-weight: 600; margin-bottom: 8px; }
+  .kpi-card .value { font-size: 26px; font-weight: 700; font-variant-numeric: proportional-nums; letter-spacing: -0.01em; }
+  .kpi-card .delta { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; margin-top: 6px; padding: 2px 7px; border-radius: 999px; }
+  .kpi-card .delta.up { color: var(--good); background: var(--good-bg); }
+  .kpi-card .delta.down { color: var(--bad); background: var(--bad-bg); }
+  .kpi-card .delta.flat { color: var(--text-muted); background: var(--gridline); }
+  .kpi-card .period { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  .panel { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin-bottom: 18px; }
+  .panel h2 { font-size: 14px; margin: 0 0 2px; }
+  .panel .panel-sub { font-size: 12px; color: var(--text-muted); margin: 0 0 14px; }
+
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 760px) { .charts-row { grid-template-columns: 1fr; } }
+
+  .bar-chart { position: relative; }
+  .bar-chart svg { width: 100%; height: auto; overflow: visible; }
+  .bar { fill: var(--series-1); }
+  .bar:hover { fill: var(--series-2); }
+  .axis-label { fill: var(--text-muted); font-size: 9.5px; font-family: system-ui, sans-serif; }
+  .tooltip {
+    position: absolute; pointer-events: none; background: var(--text-primary); color: var(--surface-1);
+    font-size: 11px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; opacity: 0; transform: translate(-50%,-120%);
+    transition: opacity 0.08s; font-variant-numeric: tabular-nums; z-index: 5;
+  }
+  .tooltip.show { opacity: 1; }
+
+  table.simple { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.simple th { text-align: left; font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; padding: 0 8px 8px; border-bottom: 1px solid var(--gridline); }
+  table.simple td { padding: 8px; border-bottom: 1px solid var(--gridline); }
+  table.simple td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.simple tr:last-child td { border-bottom: none; }
+  table.simple tr:hover td { background: color-mix(in srgb, var(--series-1) 6%, transparent); }
+
+  .breakdown-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 760px) { .breakdown-row { grid-template-columns: 1fr; } }
+
+  .search-box {
+    width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--page-plane); color: var(--text-primary); font-size: 13px; font-family: inherit; margin-bottom: 12px;
+  }
+  .search-box:focus { outline: 2px solid var(--series-1); outline-offset: -1px; }
+
+  .page-list { max-height: 420px; overflow-y: auto; border: 1px solid var(--gridline); border-radius: 8px; }
+  .page-row {
+    display: flex; justify-content: space-between; gap: 10px; padding: 9px 12px; cursor: pointer;
+    border-bottom: 1px solid var(--gridline); font-size: 13px;
+  }
+  .page-row:last-child { border-bottom: none; }
+  .page-row:hover { background: color-mix(in srgb, var(--series-1) 6%, transparent); }
+  .page-row.selected { background: color-mix(in srgb, var(--series-1) 12%, transparent); }
+  .page-row .ptitle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .page-row .pcat { color: var(--text-muted); font-size: 11px; flex: none; }
+
+  .detail-empty { color: var(--text-muted); font-size: 13px; padding: 40px 12px; text-align: center; }
+  .detail-title { font-size: 16px; font-weight: 700; margin: 0 0 2px; }
+  .detail-url { font-size: 12px; color: var(--text-muted); margin: 0 0 16px; word-break: break-all; }
+  .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 10px; margin-bottom: 14px; }
+  .detail-stat { background: var(--page-plane); border-radius: 8px; padding: 10px 12px; }
+  .detail-stat .l { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+  .detail-stat .v { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .detail-section-title { font-size: 12px; font-weight: 700; color: var(--text-secondary); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .empty-note { font-size: 12px; color: var(--text-muted); }
+
+  .legend-note { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+  .skeleton { color: var(--text-muted); font-size: 13px; padding: 24px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Website Attribution</h1>
+      <p class="sub">Leads, signups, first orders and revenue by landing page, content group and channel &mdash; curri.com</p>
+    </div>
+    <div class="updated-badge" id="updatedBadge"><span class="dot"></span>Loading&hellip;</div>
+  </header>
+
+  <div class="callout" id="revenueCallout" style="display:none;">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1L15 14H1L8 1Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 6V9.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="11.7" r="0.9" fill="currentColor"/></svg>
+    <div><strong>Data quality note:</strong> <span id="revenueCalloutText"></span></div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab-btn" id="tabBtnOverview" role="tab" aria-selected="true">Overview</button>
+    <button class="tab-btn" id="tabBtnPages" role="tab" aria-selected="false">Landing Page Explorer</button>
+  </div>
+
+  <div class="tab-panel active" id="tabOverview">
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="skeleton">Loading KPIs&hellip;</div>
+    </div>
+
+    <div class="panel">
+      <h2>Signups &mdash; monthly</h2>
+      <p class="panel-sub">Contacts with a Signed Up Date, by month (13-month history)</p>
+      <div class="bar-chart" id="chartSignups"><div class="skeleton">Loading&hellip;</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>First Orders &mdash; monthly</h2>
+      <p class="panel-sub">Contacts with a First Order Booked date, by month (13-month history)</p>
+      <div class="bar-chart" id="chartFirstOrders"><div class="skeleton">Loading&hellip;</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>New Web Leads &amp; Demo Requests &mdash; monthly</h2>
+      <p class="panel-sub">Contacts converting through a tracked website form. Tracking went live 2026-09-23, so history starts there and fills in going forward.</p>
+      <div class="bar-chart" id="chartLeads"><div class="skeleton">Loading&hellip;</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="breakdown-row">
+        <div>
+          <h2>Leads by content group</h2>
+          <p class="panel-sub">First-touch landing page category</p>
+          <table class="simple" id="tableContentGroup"><tbody><tr><td class="empty-note">Loading&hellip;</td></tr></tbody></table>
+        </div>
+        <div>
+          <h2>Leads by channel</h2>
+          <p class="panel-sub">First-touch source / medium</p>
+          <table class="simple" id="tableChannel"><tbody><tr><td class="empty-note">Loading&hellip;</td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tabPages">
+    <div class="panel">
+      <h2>Landing Page Explorer</h2>
+      <p class="panel-sub">Select any page on curri.com to see its own traffic and attribution performance (last 30 days of traffic; lifetime attribution).</p>
+      <div class="breakdown-row" style="grid-template-columns: 320px 1fr;">
+        <div>
+          <input class="search-box" id="pageSearch" type="text" placeholder="Search pages&hellip;" />
+          <div class="page-list" id="pageList"><div class="skeleton">Loading pages&hellip;</div></div>
+        </div>
+        <div id="pageDetail"><div class="detail-empty">Select a page on the left to see its metrics.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const fmtInt = n => (n ?? 0).toLocaleString('en-US');
+  const fmtUsd = n => '$' + (n ?? 0).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+  const fmtPct = n => (n == null ? '—' : Math.round(n * 100) + '%');
+  const fmtSec = n => (n == null ? '—' : Math.round(n) + 's');
+  const MONTH_LABELS = { '01':'Jan','02':'Feb','03':'Mar','04':'Apr','05':'May','06':'Jun','07':'Jul','08':'Aug','09':'Sep','10':'Oct','11':'Nov','12':'Dec' };
+  const monthShort = m => { const [y, mo] = m.split('-'); return MONTH_LABELS[mo] + " '" + y.slice(2); };
+
+  function deltaBadge(current, prior) {
+    if (prior == null || prior === 0) {
+      if (current > 0) return { cls: 'up', text: 'new this period' };
+      return { cls: 'flat', text: 'no change' };
+    }
+    const pct = ((current - prior) / prior) * 100;
+    if (Math.abs(pct) < 1) return { cls: 'flat', text: 'flat vs last month' };
+    const cls = pct > 0 ? 'up' : 'down';
+    const arrow = pct > 0 ? '↑' : '↓';
+    return { cls, text: arrow + ' ' + Math.abs(Math.round(pct)) + '% vs last month' };
+  }
+
+  function kpiCard(label, value, isUsd, current, prior) {
+    const d = deltaBadge(current, prior);
+    return '<div class="kpi-card">' +
+      '<div class="label">' + label + '</div>' +
+      '<div class="value">' + (isUsd ? fmtUsd(value) : fmtInt(value)) + '</div>' +
+      '<div class="delta ' + d.cls + '">' + d.text + '</div>' +
+      '<div class="period">this month vs last month</div>' +
+      '</div>';
+  }
+
+  function renderBarChart(el, rows, opts) {
+    opts = opts || {};
+    if (!rows.length) { el.innerHTML = '<div class="empty-note" style="padding:20px 0;">No data yet.</div>'; return; }
+    const W = 640, H = 200, padL = 28, padB = 26, padT = 10, padR = 6;
+    const innerW = W - padL - padR, innerH = H - padT - padB;
+    const max = Math.max(1, ...rows.map(r => r.value));
+    const bw = innerW / rows.length;
+    const barW = Math.max(4, bw * 0.55);
+    let bars = '', labels = '', gridlines = '';
+    const ticks = 4;
+    for (let t = 0; t <= ticks; t++) {
+      const y = padT + innerH - (innerH * t / ticks);
+      const val = Math.round(max * t / ticks);
+      gridlines += '<line x1="' + padL + '" x2="' + (W - padR) + '" y1="' + y + '" y2="' + y + '" stroke="var(--gridline)" stroke-width="1"/>';
+      gridlines += '<text class="axis-label" x="2" y="' + (y + 3) + '">' + (val >= 1000 ? Math.round(val/1000) + 'k' : val) + '</text>';
+    }
+    rows.forEach((r, i) => {
+      const x = padL + i * bw + (bw - barW) / 2;
+      const h = (r.value / max) * innerH;
+      const y = padT + innerH - h;
+      const showLabel = rows.length <= 13 ? true : (i % Math.ceil(rows.length / 13) === 0);
+      bars += '<rect class="bar" data-i="' + i + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + barW.toFixed(1) + '" height="' + Math.max(1,h).toFixed(1) + '" rx="3"/>';
+      if (showLabel) labels += '<text class="axis-label" x="' + (x + barW/2).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle">' + (opts.labelFn ? opts.labelFn(r) : r.label) + '</text>';
+    });
+    el.innerHTML =
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
+      '<line x1="' + padL + '" x2="' + (W-padR) + '" y1="' + (padT+innerH) + '" y2="' + (padT+innerH) + '" stroke="var(--baseline)" stroke-width="1"/>' +
+      gridlines + bars + labels +
+      '</svg><div class="tooltip" id="' + el.id + 'Tip"></div>';
+    const tip = el.querySelector('.tooltip');
+    el.querySelectorAll('.bar').forEach(bar => {
+      bar.addEventListener('mouseenter', e => {
+        const r = rows[+bar.dataset.i];
+        tip.textContent = (opts.labelFn ? opts.labelFn(r) : r.label) + ': ' + (opts.isUsd ? fmtUsd(r.value) : fmtInt(r.value));
+        tip.classList.add('show');
+      });
+      bar.addEventListener('mousemove', e => {
+        const rect = el.getBoundingClientRect();
+        tip.style.left = (e.clientX - rect.left) + 'px';
+        tip.style.top = (e.clientY - rect.top) + 'px';
+      });
+      bar.addEventListener('mouseleave', () => tip.classList.remove('show'));
+    });
+  }
+
+  function renderTable(el, rows, cols) {
+    if (!rows.length) { el.innerHTML = '<tbody><tr><td class="empty-note">No data yet &mdash; fills in as leads come through.</td></tr></tbody>'; return; }
+    let head = '<thead><tr>' + cols.map(c => '<th' + (c.num ? ' style="text-align:right"' : '') + '>' + c.label + '</th>').join('') + '</tr></thead>';
+    let body = '<tbody>' + rows.map(r => '<tr>' + cols.map(c => '<td' + (c.num ? ' class="num"' : '') + '>' + c.fmt(r) + '</td>').join('') + '</tr>').join('') + '</tbody>';
+    el.innerHTML = head + body;
+  }
+
+  async function main() {
+    let snapshot;
+    try {
+      const res = await fetch('./data.json', { cache: 'no-store' });
+      snapshot = await res.json();
+    } catch (e) {
+      document.getElementById('kpiGrid').innerHTML = '<div class="empty-note">Could not load data.json.</div>';
+      return;
+    }
+
+    const meta = snapshot.meta || {};
+    const kpi = snapshot.kpis || {};
+    const trendDocs = snapshot.trends || [];
+    const pageDocs = snapshot.pages || [];
+    const breakdownDocs = snapshot.breakdowns || [];
+
+    const badge = document.getElementById('updatedBadge');
+    if (meta && meta.lastUpdated) {
+      const dt = new Date(meta.lastUpdated);
+      badge.innerHTML = '<span class="dot"></span>Updated ' + dt.toLocaleString('en-US', {month:'short', day:'numeric', hour:'numeric', minute:'2-digit'}) + ' · refreshes daily';
+    } else {
+      badge.innerHTML = '<span class="dot"></span>Updated just now';
+    }
+
+    if (meta && meta.revenueGapNote) {
+      document.getElementById('revenueCallout').style.display = 'flex';
+      document.getElementById('revenueCalloutText').textContent = meta.revenueGapNote;
+    }
+
+    document.getElementById('kpiGrid').innerHTML =
+      kpiCard('New Web Leads', kpi.newWebLeads, false, kpi.newWebLeads, kpi.newWebLeadsPrior) +
+      kpiCard('Demo Requests', kpi.demoRequests, false, kpi.demoRequests, kpi.demoRequestsPrior) +
+      kpiCard('Signups', kpi.signups, false, kpi.signups, kpi.signupsPrior) +
+      kpiCard('First Orders', kpi.firstOrders, false, kpi.firstOrders, kpi.firstOrdersPrior) +
+      kpiCard('Total Revenue (lifetime)', kpi.totalRevenueCumulative, true, null, null);
+
+    const byMetric = m => trendDocs.filter(d => d.metric === m).sort((a,b) => a.month.localeCompare(b.month)).map(d => ({ label: monthShort(d.month), value: d.value }));
+    renderBarChart(document.getElementById('chartSignups'), byMetric('signups'));
+    renderBarChart(document.getElementById('chartFirstOrders'), byMetric('first_orders'));
+    const leadRows = trendDocs.filter(d => d.metric === 'new_web_leads' || d.metric === 'demo_requests')
+      .sort((a,b) => a.month.localeCompare(b.month) || a.metric.localeCompare(b.metric))
+      .map(d => ({ label: monthShort(d.month) + (d.metric === 'demo_requests' ? ' (demo)' : ' (lead)'), value: d.value }));
+    renderBarChart(document.getElementById('chartLeads'), leadRows);
+
+    const contentGroupRows = breakdownDocs.filter(d => d.type === 'content_group').sort((a,b) => b.count - a.count);
+    renderTable(document.getElementById('tableContentGroup'), contentGroupRows, [
+      { label: 'Content group', fmt: r => r.key },
+      { label: 'Leads', num: true, fmt: r => fmtInt(r.count) },
+    ]);
+    const channelRows = breakdownDocs.filter(d => d.type === 'channel').sort((a,b) => b.count - a.count);
+    renderTable(document.getElementById('tableChannel'), channelRows, [
+      { label: 'Source / Medium', fmt: r => r.key },
+      { label: 'Leads', num: true, fmt: r => fmtInt(r.count) },
+    ]);
+
+    const pageRowsData = pageDocs.slice().sort((a,b) => (b.views30d||0) - (a.views30d||0));
+    const listEl = document.getElementById('pageList');
+    const detailEl = document.getElementById('pageDetail');
+
+    function renderPageList(filter) {
+      const f = (filter || '').toLowerCase();
+      const filtered = pageRowsData.filter(p => !f || p.title.toLowerCase().includes(f) || p.url.toLowerCase().includes(f));
+      if (!filtered.length) { listEl.innerHTML = '<div class="empty-note" style="padding:14px;">No pages match.</div>'; return; }
+      listEl.innerHTML = filtered.map(p =>
+        '<div class="page-row" data-id="' + p.id + '">' +
+          '<span class="ptitle">' + p.title + '</span>' +
+          '<span class="pcat">' + p.category + '</span>' +
+        '</div>'
+      ).join('');
+      listEl.querySelectorAll('.page-row').forEach(row => {
+        row.addEventListener('click', () => {
+          listEl.querySelectorAll('.page-row').forEach(r => r.classList.remove('selected'));
+          row.classList.add('selected');
+          const p = pageRowsData.find(x => x.id === row.dataset.id);
+          renderDetail(p);
+        });
+      });
+    }
+
+    function renderDetail(p) {
+      if (!p) { detailEl.innerHTML = '<div class="detail-empty">Select a page on the left to see its metrics.</div>'; return; }
+      const hasFt = (p.ftLeads || 0) + (p.ftSignups || 0) + (p.ftFirstOrders || 0) > 0;
+      detailEl.innerHTML =
+        '<div class="detail-title">' + p.title + '</div>' +
+        '<div class="detail-url">' + p.url + '</div>' +
+        '<div class="detail-section-title">Traffic (last 30 days)</div>' +
+        '<div class="detail-grid">' +
+          '<div class="detail-stat"><div class="l">Views</div><div class="v">' + fmtInt(p.views30d) + '</div></div>' +
+          '<div class="detail-stat"><div class="l">Bounce rate</div><div class="v">' + fmtPct(p.bounceRate) + '</div></div>' +
+          '<div class="detail-stat"><div class="l">Avg time on page</div><div class="v">' + fmtSec(p.timePerPageview) + '</div></div>' +
+          '<div class="detail-stat"><div class="l">Form submissions</div><div class="v">' + fmtInt(p.submissions30d) + '</div></div>' +
+        '</div>' +
+        '<div class="detail-section-title">First-touch attribution (lifetime)</div>' +
+        (hasFt ?
+          '<div class="detail-grid">' +
+            '<div class="detail-stat"><div class="l">Leads</div><div class="v">' + fmtInt(p.ftLeads) + '</div></div>' +
+            '<div class="detail-stat"><div class="l">Signups</div><div class="v">' + fmtInt(p.ftSignups) + '</div></div>' +
+            '<div class="detail-stat"><div class="l">First orders</div><div class="v">' + fmtInt(p.ftFirstOrders) + '</div></div>' +
+            '<div class="detail-stat"><div class="l">Revenue</div><div class="v">' + fmtUsd(p.ftRevenue) + '</div></div>' +
+          '</div>' :
+          '<div class="empty-note">No leads have first-touched on this page yet. Fills in automatically as attribution tracking (live since 2026-09-23) accumulates real visits.</div>'
+        );
+    }
+
+    renderPageList('');
+    document.getElementById('pageSearch').addEventListener('input', e => renderPageList(e.target.value));
+
+    const tabs = [
+      { btn: document.getElementById('tabBtnOverview'), panel: document.getElementById('tabOverview') },
+      { btn: document.getElementById('tabBtnPages'), panel: document.getElementById('tabPages') },
+    ];
+    tabs.forEach(t => t.btn.addEventListener('click', () => {
+      tabs.forEach(o => { o.btn.setAttribute('aria-selected', o === t ? 'true' : 'false'); o.panel.classList.toggle('active', o === t); });
+    }));
+  }
+
+  main();
+})();
+</script>
+</body>
+</html>
