@@ -1,6 +1,6 @@
 {
   "meta": {
-    "lastUpdated": "2026-09-23T23:39:36Z",
+    "lastUpdated": "2026-09-24T16:30:00Z",
     "revenueGapNote": "Total Orders Revenue (db_total_revenue) sums to $0 for every first-order cohort since Feb 2026, even though 2,292 of those contacts have a non-null value for it. Likely a stalled backfill in the app→HubSpot revenue sync, not an actual revenue drop — worth checking with whoever owns that sync."
   },
   "kpis": {
@@ -62,7 +62,8 @@
     "week": { "label": "This Week", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 554, "signupsPrior": 663, "firstOrders": 231, "firstOrdersPrior": 268, "revenue": 0, "revenuePrior": 0 },
     "month": { "label": "This Month", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 2217, "signupsPrior": 3032, "firstOrders": 825, "firstOrdersPrior": 1161, "revenue": 0, "revenuePrior": 0 },
     "quarter": { "label": "This Quarter", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 8426, "signupsPrior": 6918, "firstOrders": 3197, "firstOrdersPrior": 2978, "revenue": 0, "revenuePrior": 0 },
-    "year": { "label": "This Year", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 21031, "signupsPrior": 11595, "firstOrders": 8365, "firstOrdersPrior": 6047, "revenue": 299786.48, "revenuePrior": 45906820.46 }
+    "year": { "label": "Year to Date", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 21031, "signupsPrior": 11595, "firstOrders": 8365, "firstOrdersPrior": 6047, "revenue": 299786.48, "revenuePrior": 45906820.46 },
+    "pastYear": { "label": "Past Year", "newWebLeads": 2, "newWebLeadsPrior": 0, "demoRequests": 2, "demoRequestsPrior": 0, "signups": 26321, "signupsPrior": 14260, "firstOrders": 10448, "firstOrdersPrior": 7472, "revenue": 4299179.02, "revenuePrior": 66686624.32 }
   },
   "pages": [
     { "bounceRate": 1, "category": "blog", "ftFirstOrders": 0, "ftLeads": 0, "ftRevenue": 0, "ftSignups": 0, "submissions30d": 0, "timePerPageview": null, "title": "AC Pro Keeps HVAC Projects Moving in LA with Curri", "url": "https://www.curri.com/blog/ac-pro-keeps-hvac-projects-moving-in-los-angeles-with-curri", "views30d": 2, "id": "blog-ac-pro-keeps-hvac-projects-moving-in-los-angeles-with-curri" },
