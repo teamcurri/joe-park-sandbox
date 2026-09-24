@@ -1,16 +1,16 @@
 {
   "meta": {
-    "lastUpdated": "2026-09-24T16:30:00Z",
+    "lastUpdated": "2026-09-24T17:15:00Z",
     "revenueGapNote": "Total Orders Revenue (db_total_revenue) sums to $0 for every first-order cohort since Feb 2026, even though 2,292 of those contacts have a non-null value for it. Likely a stalled backfill in the app→HubSpot revenue sync, not an actual revenue drop — worth checking with whoever owns that sync."
   },
   "kpis": {
-    "newWebLeads": 1,
+    "newWebLeads": 2,
     "newWebLeadsPrior": 0,
-    "demoRequests": 1,
+    "demoRequests": 2,
     "demoRequestsPrior": 0,
-    "signups": 2349,
+    "signups": 2367,
     "signupsPrior": 3112,
-    "firstOrders": 802,
+    "firstOrders": 836,
     "firstOrdersPrior": 1161,
     "totalRevenueCumulative": 335659192.09,
     "totalRevenueContacts": 71982
@@ -40,7 +40,7 @@
     { "metric": "signups", "month": "2026-06", "value": 2428 },
     { "metric": "signups", "month": "2026-07", "value": 3097 },
     { "metric": "signups", "month": "2026-08", "value": 3112 },
-    { "metric": "signups", "month": "2026-09", "value": 2349 },
+    { "metric": "signups", "month": "2026-09", "value": 2367 },
     { "metric": "first_orders", "month": "2025-09", "value": 704, "revenue": 2230098.46 },
     { "metric": "first_orders", "month": "2025-10", "value": 723, "revenue": 1929913.08 },
     { "metric": "first_orders", "month": "2025-11", "value": 604, "revenue": 908990.62 },
@@ -53,17 +53,17 @@
     { "metric": "first_orders", "month": "2026-06", "value": 1071, "revenue": 0 },
     { "metric": "first_orders", "month": "2026-07", "value": 1211, "revenue": 0 },
     { "metric": "first_orders", "month": "2026-08", "value": 1161, "revenue": 0 },
-    { "metric": "first_orders", "month": "2026-09", "value": 802, "revenue": 0 },
-    { "metric": "new_web_leads", "month": "2026-09", "value": 1 },
-    { "metric": "demo_requests", "month": "2026-09", "value": 1 }
+    { "metric": "first_orders", "month": "2026-09", "value": 836, "revenue": 0 },
+    { "metric": "new_web_leads", "month": "2026-09", "value": 2 },
+    { "metric": "demo_requests", "month": "2026-09", "value": 2 }
   ],
   "ranges": {
-    "today": { "label": "Today", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 132, "signupsPrior": 130, "firstOrders": 24, "firstOrdersPrior": 38, "revenue": 0, "revenuePrior": 0 },
-    "week": { "label": "This Week", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 554, "signupsPrior": 663, "firstOrders": 231, "firstOrdersPrior": 268, "revenue": 0, "revenuePrior": 0 },
-    "month": { "label": "This Month", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 2217, "signupsPrior": 3032, "firstOrders": 825, "firstOrdersPrior": 1161, "revenue": 0, "revenuePrior": 0 },
-    "quarter": { "label": "This Quarter", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 8426, "signupsPrior": 6918, "firstOrders": 3197, "firstOrdersPrior": 2978, "revenue": 0, "revenuePrior": 0 },
-    "year": { "label": "Year to Date", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 21031, "signupsPrior": 11595, "firstOrders": 8365, "firstOrdersPrior": 6047, "revenue": 299786.48, "revenuePrior": 45906820.46 },
-    "pastYear": { "label": "Past Year", "newWebLeads": 2, "newWebLeadsPrior": 0, "demoRequests": 2, "demoRequestsPrior": 0, "signups": 26321, "signupsPrior": 14260, "firstOrders": 10448, "firstOrdersPrior": 7472, "revenue": 4299179.02, "revenuePrior": 66686624.32 }
+    "today": { "label": "Today", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 77, "signupsPrior": 139, "firstOrders": 0, "firstOrdersPrior": 31, "revenue": 0, "revenuePrior": 0 },
+    "week": { "label": "This Week", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 380, "signupsPrior": 482, "firstOrders": 126, "firstOrdersPrior": 135, "revenue": 0, "revenuePrior": 0 },
+    "month": { "label": "This Month", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 2367, "signupsPrior": 3032, "firstOrders": 836, "firstOrdersPrior": 1161, "revenue": 0, "revenuePrior": 0 },
+    "quarter": { "label": "This Quarter", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 8625, "signupsPrior": 6515, "firstOrders": 3210, "firstOrdersPrior": 2722, "revenue": 0, "revenuePrior": 0 },
+    "year": { "label": "Year to Date", "newWebLeads": 1, "newWebLeadsPrior": 0, "demoRequests": 1, "demoRequestsPrior": 0, "signups": 21320, "signupsPrior": 11657, "firstOrders": 8380, "firstOrdersPrior": 6047, "revenue": 300017.52, "revenuePrior": 45972841.13 },
+    "pastYear": { "label": "Past Year", "newWebLeads": 2, "newWebLeadsPrior": 0, "demoRequests": 2, "demoRequestsPrior": 0, "signups": 26315, "signupsPrior": 14260, "firstOrders": 10453, "firstOrdersPrior": 7472, "revenue": 4299179.02, "revenuePrior": 66686624.32 }
   },
   "pages": [
     { "bounceRate": 1, "category": "blog", "ftFirstOrders": 0, "ftLeads": 0, "ftRevenue": 0, "ftSignups": 0, "submissions30d": 0, "timePerPageview": null, "title": "AC Pro Keeps HVAC Projects Moving in LA with Curri", "url": "https://www.curri.com/blog/ac-pro-keeps-hvac-projects-moving-in-los-angeles-with-curri", "views30d": 2, "id": "blog-ac-pro-keeps-hvac-projects-moving-in-los-angeles-with-curri" },
